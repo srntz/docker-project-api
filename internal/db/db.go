@@ -7,16 +7,22 @@ import (
 	"os"
 )
 
-func CreateConnection() *sql.DB {
-	db, err := sql.Open("postgres", os.Getenv("DB_CONNECTION_STRING"))
+var connection *sql.DB
 
-	if err != nil {
-		log.Fatal(err)
+func Connect() *sql.DB {
+	if connection == nil {
+		db, err := sql.Open("postgres", os.Getenv("DB_CONNECTION_STRING"))
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if err := db.Ping(); err != nil {
+			log.Fatal(err)
+		}
+
+		connection = db
 	}
 
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-	}
-
-	return db
+	return connection
 }

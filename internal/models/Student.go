@@ -1,4 +1,4 @@
-package model
+package models
 
 type Student struct {
 	StudentId   int64  `json:"studentId"`

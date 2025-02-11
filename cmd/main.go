@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	dbInstance := db.CreateConnection()
-	api.CreateServer(dbInstance)
+	dbInstance := db.Connect()
+	api.CreateServer()
 
 	defer dbInstance.Close()
 }

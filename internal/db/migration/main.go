@@ -3,19 +3,19 @@ package main
 import (
 	"database/sql"
 	"docker-project-api/internal/db"
-	"docker-project-api/internal/model"
+	"docker-project-api/internal/models"
 	"fmt"
 	_ "github.com/joho/godotenv/autoload"
 	"log"
 )
 
-// Global database instance. The variable gets initialized from main()
+// File-scoped database instance. The variable gets initialized from main()
 var dbInstance *sql.DB
 
 // Mock data for the student table
-var studentData = []model.StudentInsert{
-	model.StudentInsert{"John Doe", "CPRG-101"},
-	model.StudentInsert{"Jane Doe", "CPRG-102"},
+var studentData = []models.StudentInsert{
+	{"John Doe", "CPRG-101"},
+	{"Jane Doe", "CPRG-102"},
 }
 
 /*
@@ -71,10 +71,8 @@ func loadData() {
 }
 
 func main() {
-	dbInstance = db.CreateConnection()
+	dbInstance = db.Connect()
 	dropAll()
 	loadSchema()
 	loadData()
-
-	defer dbInstance.Close()
 }
