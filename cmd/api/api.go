@@ -7,7 +7,7 @@ import (
 )
 
 func CreateServer() {
-	http.HandleFunc("/api/v1/getStudents", handlers.StudentHandler)
+	http.HandleFunc("/api/v1/getStudents", handlers.GetStudentHandler)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
