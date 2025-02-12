@@ -64,7 +64,7 @@ func loadData() {
 			return
 		}
 
-		fmt.Printf("A student with id: %d created.\n", id)
+		fmt.Printf("A student with id: %s created.\n", id)
 	}
 
 	fmt.Println("All data has been loaded successfully.")

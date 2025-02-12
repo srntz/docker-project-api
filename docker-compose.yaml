@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  docker_db:
+    image: postgres
+    ports:
+      - "5550:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: docker_project_user
+      POSTGRES_DB: docker_project_db
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "docker_project_user", "-d", "docker_project_db" ]
+      interval: 3s
+      retries: 10
+      start_period: 10s
+
+  docker_project_api:
+    image: srntz/docker_project_api
+    command:
+      ["sh", "-c", "./docker_project_api_migrate && ./docker_project_api"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      docker_db:
+          condition: service_healthy

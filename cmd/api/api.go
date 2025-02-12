@@ -2,7 +2,6 @@ package api
 
 import (
 	"docker-project-api/cmd/api/handlers/student"
-	"log"
 	"net/http"
 )
 
@@ -20,6 +19,6 @@ func CreateServer() {
 
 	err := server.ListenAndServe()
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 }

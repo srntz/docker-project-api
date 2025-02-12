@@ -49,7 +49,9 @@ func parseBody(w http.ResponseWriter, r *http.Request) (models.StudentInsert, er
 	studentStruct := models.StudentInsert{}
 	err = json.Unmarshal(body, &studentStruct)
 	if err != nil || studentStruct.StudentName == "" || studentStruct.Course == "" || studentStruct.StudentId == "" {
-		apiresponse.SendErrorResponse(w, nil, http.StatusBadRequest, "Provided body does not contain required fields. Make sure you are using application/json format and 'studentName' and 'course' fields are present and non-empty")
+		apiresponse.SendErrorResponse(w, nil, http.StatusBadRequest, `
+			Provided body does not contain required fields. Make sure you are using application/json format 
+			and 'studentName' and 'course' fields are present and non-empty`)
 		return models.StudentInsert{}, errors.New("")
 	}
 
