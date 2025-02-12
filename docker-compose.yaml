@@ -17,10 +17,10 @@ services:
 
   docker_project_api:
     image: srntz/docker_project_api
-    command:
-      ["sh", "-c", "./docker_project_api_migrate && ./docker_project_api"]
     ports:
       - "8080:8080"
+    environment:
+      DB_CONNECTION_STRING: postgres://docker_project_user:password@docker_db:5432/docker_project_db?sslmode=disable
     depends_on:
       docker_db:
           condition: service_healthy
