@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"docker-project-api/internal/db"
 	"docker-project-api/internal/models"
-	"docker-project-api/internal/util"
+	"docker-project-api/internal/util/apiresponse"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 func GetStudent(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 	if id == "" {
-		util.SendErrorResponse(w, nil, http.StatusBadRequest, "Student ID is required. Use a URL parameter ('id')")
+		apiresponse.SendErrorResponse(w, nil, http.StatusBadRequest, "Student ID is required. Use a URL parameter ('id')")
 		return
 	}
 
@@ -25,7 +25,7 @@ func GetStudent(w http.ResponseWriter, r *http.Request) {
 	student := models.Student{}
 	err := dbInstance.QueryRow(query, id).Scan(&student.StudentId, &student.StudentName, &student.Course, &student.PresentDate)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		util.SendErrorResponse(w, err, http.StatusInternalServerError, util.MessageScanError)
+		apiresponse.SendErrorResponse(w, err, http.StatusInternalServerError, apiresponse.MessageScanError)
 		return
 	} else if errors.Is(err, sql.ErrNoRows) {
 		w.Header().Set("Content-Type", "application/json")
@@ -48,7 +48,7 @@ func GetAllStudents(w http.ResponseWriter, _ *http.Request) {
 
 	rows, err := dbInstance.Query(query)
 	if err != nil {
-		util.SendErrorResponse(w, err, http.StatusInternalServerError, "Invalid database query")
+		apiresponse.SendErrorResponse(w, err, http.StatusInternalServerError, apiresponse.MessageInvalidQuery)
 		return
 	}
 	defer rows.Close()
@@ -57,7 +57,7 @@ func GetAllStudents(w http.ResponseWriter, _ *http.Request) {
 		var student models.Student
 		err := rows.Scan(&student.StudentId, &student.StudentName, &student.Course, &student.PresentDate)
 		if err != nil {
-			util.SendErrorResponse(w, err, http.StatusInternalServerError, util.MessageScanError)
+			apiresponse.SendErrorResponse(w, err, http.StatusInternalServerError, apiresponse.MessageScanError)
 			return
 		}
 
@@ -68,7 +68,7 @@ func GetAllStudents(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
-		util.SendErrorResponse(w, err, http.StatusInternalServerError, "Response encoding failed")
+		apiresponse.SendErrorResponse(w, err, http.StatusInternalServerError, apiresponse.MessageResponseEncodingError)
 		return
 	}
 }

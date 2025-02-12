@@ -1,4 +1,4 @@
-package util
+package apiresponse
 
 import (
 	"docker-project-api/internal/models"
@@ -9,6 +9,7 @@ import (
 
 const MessageInvalidQuery = "Invalid database query"
 const MessageScanError = "Data mapping failed"
+const MessageResponseEncodingError = "Response encoding failed"
 
 func SendErrorResponse(w http.ResponseWriter, error error, statusCode int, message string) {
 	if error != nil {
