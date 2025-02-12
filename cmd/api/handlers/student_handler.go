@@ -1,16 +1,48 @@
 package handlers
 
 import (
+	"database/sql"
 	"docker-project-api/internal/db"
 	"docker-project-api/internal/models"
 	"docker-project-api/internal/util"
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
-func GetStudentHandler(w http.ResponseWriter, r *http.Request) {
+func GetStudent(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		util.SendErrorResponse(w, nil, http.StatusBadRequest, "Student ID is required. Use a URL parameter ('id')")
+		return
+	}
+
 	dbInstance := db.Connect()
-	response := models.Response[models.Student]{[]models.Student{}}
+
+	query := "SELECT student_id, student_name, course, present_date FROM student WHERE student_id = $1"
+
+	response := models.Response[models.Student]{}
+	student := models.Student{}
+	err := dbInstance.QueryRow(query, id).Scan(&student.StudentId, &student.StudentName, &student.Course, &student.PresentDate)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		util.SendErrorResponse(w, err, http.StatusInternalServerError, util.MessageScanError)
+		return
+	} else if errors.Is(err, sql.ErrNoRows) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(models.Response[any]{nil})
+		return
+	}
+
+	response.Data = student
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func GetAllStudents(w http.ResponseWriter, _ *http.Request) {
+	dbInstance := db.Connect()
+	response := models.Response[[]models.Student]{[]models.Student{}}
 
 	query := "SELECT student_id, student_name, course, present_date FROM student"
 
@@ -25,7 +57,8 @@ func GetStudentHandler(w http.ResponseWriter, r *http.Request) {
 		var student models.Student
 		err := rows.Scan(&student.StudentId, &student.StudentName, &student.Course, &student.PresentDate)
 		if err != nil {
-			util.SendErrorResponse(w, err, http.StatusInternalServerError, "Data could not be mapped to a model")
+			util.SendErrorResponse(w, err, http.StatusInternalServerError, util.MessageScanError)
+			return
 		}
 
 		response.Data = append(response.Data, student)
@@ -36,5 +69,6 @@ func GetStudentHandler(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		util.SendErrorResponse(w, err, http.StatusInternalServerError, "Response encoding failed")
+		return
 	}
 }

@@ -7,9 +7,14 @@ import (
 	"net/http"
 )
 
+const MessageInvalidQuery = "Invalid database query"
+const MessageScanError = "Data mapping failed"
+
 func SendErrorResponse(w http.ResponseWriter, error error, statusCode int, message string) {
-	log.Println(error)
-	
+	if error != nil {
+		log.Println(error)
+	}
+
 	response := models.ErrorResponse{Error: struct {
 		StatusCode int    `json:"status_code"`
 		Message    string `json:"message"`

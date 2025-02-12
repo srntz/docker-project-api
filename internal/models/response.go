@@ -1,7 +1,7 @@
 package models
 
 type Response[T any] struct {
-	Data []T `json:"data"`
+	Data T `json:"data"`
 }
 
 type ErrorResponse struct {
