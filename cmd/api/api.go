@@ -1,16 +1,24 @@
 package api
 
 import (
-	"docker-project-api/cmd/api/handlers"
+	"docker-project-api/cmd/api/handlers/student"
 	"log"
 	"net/http"
 )
 
 func CreateServer() {
-	http.HandleFunc("/api/v1/getAllStudents", handlers.GetAllStudents)
-	http.HandleFunc("/api/v1/getStudent", handlers.GetStudent)
+	router := http.NewServeMux()
 
-	err := http.ListenAndServe(":8080", nil)
+	router.HandleFunc("GET /getAllStudents", student.GetAllStudents)
+	router.HandleFunc("GET /getStudent", student.GetStudent)
+	router.HandleFunc("POST /student", student.CreateStudent)
+
+	server := http.Server{
+		Addr:    ":8080",
+		Handler: router,
+	}
+
+	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -10,6 +10,7 @@ import (
 const MessageInvalidQuery = "Invalid database query"
 const MessageScanError = "Data mapping failed"
 const MessageResponseEncodingError = "Response encoding failed"
+const MessageInternalError = "An internal server error occurred"
 
 func SendErrorResponse(w http.ResponseWriter, error error, statusCode int, message string) {
 	if error != nil {

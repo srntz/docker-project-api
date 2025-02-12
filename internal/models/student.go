@@ -8,6 +8,7 @@ type Student struct {
 }
 
 type StudentInsert struct {
+	StudentId   string `json:"studentId"`
 	StudentName string `json:"studentName"`
 	Course      string `json:"course"`
 }

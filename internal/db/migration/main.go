@@ -14,8 +14,8 @@ var dbInstance *sql.DB
 
 // Mock data for the student table
 var studentData = []models.StudentInsert{
-	{"John Doe", "CPRG-101"},
-	{"Jane Doe", "CPRG-102"},
+	{"ABC10000", "John Doe", "CPRG-101"},
+	{"ABC10001", "Jane Doe", "CPRG-102"},
 }
 
 /*
@@ -37,7 +37,7 @@ Creates tables
 */
 func loadSchema() {
 	query := `CREATE TABLE IF NOT EXISTS student (
-		    student_id SERIAL PRIMARY KEY,
+		    student_id VARCHAR(128) PRIMARY KEY,
 		    student_name VARCHAR(255),
 		    course VARCHAR(255),
 		    present_date TIMESTAMP DEFAULT NOW())`
@@ -54,10 +54,10 @@ func loadSchema() {
 Loads mock data into the tables
 */
 func loadData() {
-	query := `INSERT INTO student (student_name, course) VALUES ($1, $2) RETURNING student_id`
+	query := `INSERT INTO student (student_id, student_name, course) VALUES ($1, $2, $3) RETURNING student_id`
 	for i := 0; i < len(studentData); i++ {
-		var id int64
-		err := dbInstance.QueryRow(query, studentData[i].StudentName, studentData[0].Course).Scan(&id)
+		var id string
+		err := dbInstance.QueryRow(query, studentData[i].StudentId, studentData[i].StudentName, studentData[i].Course).Scan(&id)
 
 		if err != nil {
 			log.Fatal(err)
